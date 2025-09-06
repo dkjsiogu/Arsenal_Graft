@@ -1,0 +1,24 @@
+{
+  "type": "tconstruct:alloy",
+  "conditions": [
+    {
+      "type": "mantle:tag_filled",
+      "tag": "forge:ingots/silver"
+    }
+  ],
+  "inputs": [
+    {
+      "amount": 90,
+      "tag": "forge:molten_gold"
+    },
+    {
+      "amount": 90,
+      "tag": "forge:molten_silver"
+    }
+  ],
+  "result": {
+    "amount": 180,
+    "tag": "forge:molten_electrum"
+  },
+  "temperature": 760
+}

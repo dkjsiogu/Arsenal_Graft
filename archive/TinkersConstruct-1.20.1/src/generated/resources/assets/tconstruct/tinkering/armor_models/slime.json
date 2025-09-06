@@ -1,0 +1,20 @@
+{
+  "layers": [
+    {
+      "type": "tconstruct:first_present",
+      "options": [
+        {
+          "type": "tconstruct:persistent_data",
+          "material_key": "tconstruct:embellishment",
+          "prefix": "tconstruct:slime/"
+        },
+        {
+          "type": "tconstruct:fixed",
+          "prefix": "tconstruct:slime/",
+          "suffix": "_tconstruct_enderslime"
+        }
+      ]
+    },
+    "tconstruct:trim"
+  ]
+}

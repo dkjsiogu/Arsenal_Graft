@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "tconstruct:diamond",
+      "required": false
+    },
+    {
+      "id": "tconstruct:emerald",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "item.arsenalgraft.sapphire": "蓝宝石",
+  "key.categories.arsenalgraft": "Arsenal Graft",
+  "key.arsenalgraft.body_modification_gui": "身体改造配置",
+  "overlay.arsenalgraft.extra_hand": "额外手",
+  "overlay.arsenalgraft.drop_here": "拖拽物品到此",
+  "gui.arsenalgraft.hand_config.title": "手部 配置",
+  "gui.arsenalgraft.hand_config.normal_hand": "• 普通手 (已启用)",
+  "gui.arsenalgraft.hand_config.inventory_wip": "物品栏功能开发中...",
+  "gui.arsenalgraft.hand_config.future": "将来可以:",
+  "gui.arsenalgraft.hand_config.future_place": "• 放置物品到手部",
+  "gui.arsenalgraft.hand_config.future_interact": "• 与玩家背包交互"
+}

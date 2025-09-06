@@ -1,0 +1,14 @@
+{
+  "values": [
+    "tconstruct:draconic",
+    "tconstruct:rebalanced",
+    "tconstruct:harmonious",
+    "tconstruct:recapitated",
+    "tconstruct:forecast",
+    "tconstruct:writable",
+    {
+      "id": "tconstruct:embossed",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "title": "回收工具",
+  "image": {
+    "file": "tconstruct:book/images/recycling.png",
+    "width": 170,
+    "height": 64
+  },
+  "text": [
+    {
+      "text": "如果你突然有了个新点子，就可以将工具放入部件制造台拆解以回收其中一个工具部件。而当你修补工具后，就有极高的概率回收另一个工具部件。匕首则需同时放入2把才能回收。",
+      "paragraph": true
+    }
+	]
+}

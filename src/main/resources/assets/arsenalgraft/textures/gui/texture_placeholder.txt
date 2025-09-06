@@ -1,0 +1,17 @@
+# Unified Arsenal GUI Texture Note
+# 
+# This file serves as a placeholder for the unified_arsenal.png texture
+# The texture should be 256x256 pixels with the following layout:
+# 
+# Main GUI Background (176x166):
+# - Standard inventory GUI background
+# - Arsenal slot areas for extra hands
+# 
+# Slot Background (18x18) at position 176,0:
+# - Empty slot background for arsenal slots
+# 
+# Until a proper texture is created, the game will use the default
+# missing texture (purple/black checkerboard) which is acceptable
+# for testing functionality.
+#
+# The GUI will still function correctly without the custom texture.

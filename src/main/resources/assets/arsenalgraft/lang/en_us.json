@@ -1,0 +1,40 @@
+{
+  "item.arsenalgraft.sapphire": "蓝宝石",
+  "key.categories.arsenalgraft": "Arsenal Graft",
+  "key.arsenalgraft.body_modification_gui": "身体改造配置",
+  "key.arsenalgraft.open_gui": "Open Arsenal GUI",
+  
+  "gui.arsenalgraft.main.title": "Arsenal Graft",
+  "gui.arsenalgraft.button.body_parts": "Body Parts",
+  "gui.arsenalgraft.button.modifications": "Modifications",
+  "gui.arsenalgraft.body_parts.title": "Select Body Part",
+  "gui.arsenalgraft.modifications.title": "Modifications for %s",
+  "gui.arsenalgraft.no_modifications": "No modifications available for this body part",
+  "gui.arsenalgraft.modification.installed": "Installed",
+  "gui.arsenalgraft.modification.not_installed": "Not Installed",
+  "gui.arsenalgraft.modification.removed": "Removed modification: %s",
+  
+  "body_part.head": "Head",
+  "body_part.hand": "Hand",
+  "body_part.chest": "Chest", 
+  "body_part.legs": "Legs",
+  "body_part.feet": "Feet",
+  
+  "modification.arsenalgraft.simple_hand": "Simple Hand Modification",
+  "modification.arsenalgraft.simple_hand.desc": "Provides one additional inventory slot for the hand",
+  
+  "gui.arsenalgraft.body_modification": "身体改造配置",
+  "overlay.arsenalgraft.extra_hand": "额外手",
+  "overlay.arsenalgraft.drop_here": "拖拽物品到此",
+  "gui.arsenalgraft.hand_config.title": "手部 配置",
+  "gui.arsenalgraft.hand_config.normal_hand": "• 普通手 (已启用)",
+  "gui.arsenalgraft.hand_config.inventory_wip": "物品栏功能开发中...",
+  "gui.arsenalgraft.hand_config.future": "将来可以:",
+  "gui.arsenalgraft.hand_config.future_place": "• 放置物品到手部",
+  "gui.arsenalgraft.hand_config.future_interact": "• 与玩家背包交互",
+  "gui.arsenalgraft.extra_slots": "额外槽位配置",
+  "gui.arsenalgraft.extra_slots.title": "Arsenal 额外槽位",
+  "gui.arsenalgraft.extra_slots.description": "配置和管理额外的物品槽位",
+  "gui.arsenalgraft.extra_hand.slot": "额外手 %d",
+  "gui.arsenalgraft.slot.empty": "空槽位"
+}
