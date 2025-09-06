@@ -5,6 +5,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import io.github.dkjsiogu.arsenalgraft.client.gui.GuiLayerManager;
 import io.github.dkjsiogu.arsenalgraft.client.gui.widget.NavigationButton;
+import io.github.dkjsiogu.arsenalgraft.client.gui.widget.ShapeButton;
+import io.github.dkjsiogu.arsenalgraft.client.gui.registry.GuiRegistry;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -15,26 +17,48 @@ import java.util.Map;
  */
 public class ModificationMainScreen extends Screen {
     
-    // 界面布局常量
-    private static final int BUTTON_WIDTH = 60;
-    private static final int BUTTON_HEIGHT = 20;
+    // 界面布局常量 - 史蒂夫比例调整
+    private static final int HEAD_WIDTH = 40;
+    private static final int HEAD_HEIGHT = 40;
     
-    // 人形布局坐标（相对于屏幕中心）
+    private static final int TORSO_WIDTH = 60;  // 躯干更宽
+    private static final int TORSO_HEIGHT = 50; // 躯干更高
+    
+    private static final int ARM_WIDTH = 24;
+    private static final int ARM_HEIGHT = 50;
+    
+    private static final int LEG_WIDTH = 24;
+    private static final int LEG_HEIGHT = 50;
+    
+    private static final int FOOT_WIDTH = 24;
+    private static final int FOOT_HEIGHT = 16;
+    
+    // 人形布局坐标（相对于屏幕中心）- 更紧密的史蒂夫布局
+    // 头部
     private static final int HEAD_X = 0;
     private static final int HEAD_Y = -80;
     
-    private static final int LEFT_ARM_X = -80;
-    private static final int LEFT_ARM_Y = -40;
-    private static final int RIGHT_ARM_X = 80;
-    private static final int RIGHT_ARM_Y = -40;
-    
+    // 躯干
     private static final int TORSO_X = 0;
-    private static final int TORSO_Y = -20;
+    private static final int TORSO_Y = -30;
     
-    private static final int LEFT_LEG_X = -30;
-    private static final int LEFT_LEG_Y = 40;
-    private static final int RIGHT_LEG_X = 30;
-    private static final int RIGHT_LEG_Y = 40;
+    // 手臂 - 更贴近躯干
+    private static final int LEFT_ARM_X = -50;  // 更靠近
+    private static final int LEFT_ARM_Y = -30;
+    private static final int RIGHT_ARM_X = 50;  // 更靠近
+    private static final int RIGHT_ARM_Y = -30;
+    
+    // 腿部 - 更贴近躯干
+    private static final int LEFT_LEG_X = -15;  // 更靠近中心
+    private static final int LEFT_LEG_Y = 30;
+    private static final int RIGHT_LEG_X = 15;  // 更靠近中心
+    private static final int RIGHT_LEG_Y = 30;
+    
+    // 脚部
+    private static final int LEFT_FOOT_X = -15;
+    private static final int LEFT_FOOT_Y = 65;
+    private static final int RIGHT_FOOT_X = 15;
+    private static final int RIGHT_FOOT_Y = 65;
     
     private int centerX;
     private int centerY;
@@ -60,64 +84,72 @@ public class ModificationMainScreen extends Screen {
     
     private void createBodyPartButtons() {
         // 头部按钮
-        addRenderableWidget(NavigationButton.createBodyPartButton(
-            centerX + HEAD_X - BUTTON_WIDTH / 2,
-            centerY + HEAD_Y - BUTTON_HEIGHT / 2,
-            BUTTON_WIDTH, BUTTON_HEIGHT,
-            Component.translatable("gui.arsenalgraft.body_part.head"),
-            "head",
-            () -> new ModificationListScreen("head", Component.translatable("gui.arsenalgraft.body_part.head"))
-        ));
-        
-        // 左臂按钮
-        addRenderableWidget(NavigationButton.createBodyPartButton(
-            centerX + LEFT_ARM_X - BUTTON_WIDTH / 2,
-            centerY + LEFT_ARM_Y - BUTTON_HEIGHT / 2,
-            BUTTON_WIDTH, BUTTON_HEIGHT,
-            Component.translatable("gui.arsenalgraft.body_part.left_arm"),
-            "left_arm",
-            () -> new ModificationListScreen("left_arm", Component.translatable("gui.arsenalgraft.body_part.left_arm"))
-        ));
-        
-        // 右臂按钮
-        addRenderableWidget(NavigationButton.createBodyPartButton(
-            centerX + RIGHT_ARM_X - BUTTON_WIDTH / 2,
-            centerY + RIGHT_ARM_Y - BUTTON_HEIGHT / 2,
-            BUTTON_WIDTH, BUTTON_HEIGHT,
-            Component.translatable("gui.arsenalgraft.body_part.right_arm"),
-            "right_arm",
-            () -> new ModificationListScreen("right_arm", Component.translatable("gui.arsenalgraft.body_part.right_arm"))
+        addRenderableWidget(createBodyPartButton(
+            "head", HEAD_X, HEAD_Y, HEAD_WIDTH, HEAD_HEIGHT,
+            Component.translatable("gui.arsenalgraft.body_part.head")
         ));
         
         // 躯干按钮
-        addRenderableWidget(NavigationButton.createBodyPartButton(
-            centerX + TORSO_X - BUTTON_WIDTH / 2,
-            centerY + TORSO_Y - BUTTON_HEIGHT / 2,
-            BUTTON_WIDTH, BUTTON_HEIGHT,
-            Component.translatable("gui.arsenalgraft.body_part.torso"),
-            "torso",
-            () -> new ModificationListScreen("torso", Component.translatable("gui.arsenalgraft.body_part.torso"))
+        addRenderableWidget(createBodyPartButton(
+            "torso", TORSO_X, TORSO_Y, TORSO_WIDTH, TORSO_HEIGHT,
+            Component.translatable("gui.arsenalgraft.body_part.torso")
         ));
         
-        // 左腿按钮
-        addRenderableWidget(NavigationButton.createBodyPartButton(
-            centerX + LEFT_LEG_X - BUTTON_WIDTH / 2,
-            centerY + LEFT_LEG_Y - BUTTON_HEIGHT / 2,
-            BUTTON_WIDTH, BUTTON_HEIGHT,
-            Component.translatable("gui.arsenalgraft.body_part.left_leg"),
-            "left_leg",
-            () -> new ModificationListScreen("left_leg", Component.translatable("gui.arsenalgraft.body_part.left_leg"))
+        // 左臂按钮 (映射到手臂改造)
+        addRenderableWidget(createBodyPartButton(
+            "left_arm", LEFT_ARM_X, LEFT_ARM_Y, ARM_WIDTH, ARM_HEIGHT,
+            Component.translatable("gui.arsenalgraft.body_part.left_arm")
         ));
         
-        // 右腿按钮
-        addRenderableWidget(NavigationButton.createBodyPartButton(
-            centerX + RIGHT_LEG_X - BUTTON_WIDTH / 2,
-            centerY + RIGHT_LEG_Y - BUTTON_HEIGHT / 2,
-            BUTTON_WIDTH, BUTTON_HEIGHT,
-            Component.translatable("gui.arsenalgraft.body_part.right_leg"),
-            "right_leg",
-            () -> new ModificationListScreen("right_leg", Component.translatable("gui.arsenalgraft.body_part.right_leg"))
+        // 右臂按钮 (映射到手臂改造)
+        addRenderableWidget(createBodyPartButton(
+            "right_arm", RIGHT_ARM_X, RIGHT_ARM_Y, ARM_WIDTH, ARM_HEIGHT,
+            Component.translatable("gui.arsenalgraft.body_part.right_arm")
         ));
+        
+        // 左腿按钮 (映射到腿部改造)
+        addRenderableWidget(createBodyPartButton(
+            "left_leg", LEFT_LEG_X, LEFT_LEG_Y, LEG_WIDTH, LEG_HEIGHT,
+            Component.translatable("gui.arsenalgraft.body_part.left_leg")
+        ));
+        
+        // 右腿按钮 (映射到腿部改造)
+        addRenderableWidget(createBodyPartButton(
+            "right_leg", RIGHT_LEG_X, RIGHT_LEG_Y, LEG_WIDTH, LEG_HEIGHT,
+            Component.translatable("gui.arsenalgraft.body_part.right_leg")
+        ));
+        
+        // 左脚按钮
+        addRenderableWidget(createBodyPartButton(
+            "left_foot", LEFT_FOOT_X, LEFT_FOOT_Y, FOOT_WIDTH, FOOT_HEIGHT,
+            Component.translatable("gui.arsenalgraft.body_part.left_foot")
+        ));
+        
+        // 右脚按钮
+        addRenderableWidget(createBodyPartButton(
+            "right_foot", RIGHT_FOOT_X, RIGHT_FOOT_Y, FOOT_WIDTH, FOOT_HEIGHT,
+            Component.translatable("gui.arsenalgraft.body_part.right_foot")
+        ));
+    }
+    
+    /**
+     * 创建身体部位按钮的辅助方法
+     */
+    private ShapeButton createBodyPartButton(String bodyPart, int offsetX, int offsetY, int width, int height, Component displayName) {
+        int x = centerX + offsetX - width / 2;
+        int y = centerY + offsetY - height / 2;
+        
+        // 使用新的形状按钮系统
+        return GuiRegistry.createBodyPartButton(
+            x, y, width, height,
+            bodyPart, displayName,
+            () -> {
+                var screen = GuiRegistry.createScreenForBodyPart(bodyPart);
+                if (screen != null && minecraft != null) {
+                    minecraft.setScreen(screen);
+                }
+            }
+        );
     }
     
     private void createNavigationButtons() {
@@ -142,7 +174,7 @@ public class ModificationMainScreen extends Screen {
             10, this.height - 30, 70, 20,
             Component.translatable("gui.arsenalgraft.settings"),
             GuiLayerManager.GuiLayer.SETTINGS,
-            () -> new SettingsScreen(), // TODO: 创建设置界面
+            () -> new SettingsScreen(),
             settingsContext,
             NavigationButton.ButtonStyle.NAVIGATION, true
         ));
@@ -153,80 +185,22 @@ public class ModificationMainScreen extends Screen {
         // 渲染背景
         renderBackground(guiGraphics);
         
-        // 渲染人形轮廓（可选）
-        renderBodyOutline(guiGraphics);
-        
         // 渲染标题
         guiGraphics.drawCenteredString(this.font, this.title, 
                                      this.width / 2, 20, 0xFFFFFF);
         
+        // 渲染说明文本
+        Component infoText = Component.translatable("gui.arsenalgraft.main_screen.info");
+        guiGraphics.drawCenteredString(this.font, infoText, 
+                                     this.width / 2, 40, 0xCCCCCC);
+        
         // 渲染所有组件
         super.render(guiGraphics, mouseX, mouseY, partialTick);
-        
-        // 渲染工具提示
-        renderTooltips(guiGraphics, mouseX, mouseY);
-    }
-    
-    private void renderBodyOutline(GuiGraphics guiGraphics) {
-        // TODO: 绘制简单的人形轮廓作为视觉指导
-        // 可以使用简单的线条或纹理来表示人体轮廓
-        
-        // 示例：绘制简单的线条连接各个身体部位
-        int lineColor = 0x80FFFFFF; // 半透明白色
-        
-        // 头部到躯干
-        drawLine(guiGraphics, 
-                centerX + HEAD_X, centerY + HEAD_Y + BUTTON_HEIGHT / 2,
-                centerX + TORSO_X, centerY + TORSO_Y - BUTTON_HEIGHT / 2,
-                lineColor);
-        
-        // 躯干到手臂
-        drawLine(guiGraphics,
-                centerX + TORSO_X - BUTTON_WIDTH / 2, centerY + TORSO_Y,
-                centerX + LEFT_ARM_X + BUTTON_WIDTH / 2, centerY + LEFT_ARM_Y,
-                lineColor);
-        
-        drawLine(guiGraphics,
-                centerX + TORSO_X + BUTTON_WIDTH / 2, centerY + TORSO_Y,
-                centerX + RIGHT_ARM_X - BUTTON_WIDTH / 2, centerY + RIGHT_ARM_Y,
-                lineColor);
-        
-        // 躯干到腿部
-        drawLine(guiGraphics,
-                centerX + TORSO_X, centerY + TORSO_Y + BUTTON_HEIGHT / 2,
-                centerX + LEFT_LEG_X, centerY + LEFT_LEG_Y - BUTTON_HEIGHT / 2,
-                lineColor);
-        
-        drawLine(guiGraphics,
-                centerX + TORSO_X, centerY + TORSO_Y + BUTTON_HEIGHT / 2,
-                centerX + RIGHT_LEG_X, centerY + RIGHT_LEG_Y - BUTTON_HEIGHT / 2,
-                lineColor);
-    }
-    
-    private void drawLine(GuiGraphics guiGraphics, int x1, int y1, int x2, int y2, int color) {
-        // 简单的线条绘制（使用填充矩形模拟）
-        int dx = x2 - x1;
-        int dy = y2 - y1;
-        int length = (int) Math.sqrt(dx * dx + dy * dy);
-        
-        if (length > 0) {
-            // 绘制1像素宽的线条
-            for (int i = 0; i <= length; i++) {
-                int x = x1 + (dx * i) / length;
-                int y = y1 + (dy * i) / length;
-                guiGraphics.fill(x, y, x + 1, y + 1, color);
-            }
-        }
-    }
-    
-    private void renderTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        // TODO: 为身体部位按钮添加工具提示
-        // 显示已安装的改造数量、效果预览等信息
     }
     
     @Override
     public boolean isPauseScreen() {
-        return false; // 不暂停游戏
+        return false;
     }
     
     @Override

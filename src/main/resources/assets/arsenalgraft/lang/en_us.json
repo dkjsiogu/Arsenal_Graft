@@ -7,6 +7,7 @@
   
   "gui.arsenalgraft.main.title": "Arsenal Graft",
   "gui.arsenalgraft.main_screen.title": "Arsenal Graft - 身体改造",
+  "gui.arsenalgraft.main_screen.info": "点击身体部位查看和管理改造",
   "gui.arsenalgraft.button.body_parts": "Body Parts",
   "gui.arsenalgraft.button.modifications": "Modifications",
   "gui.arsenalgraft.body_parts.title": "Select Body Part",
@@ -20,8 +21,18 @@
   "gui.arsenalgraft.body_part.torso": "躯干",
   "gui.arsenalgraft.body_part.left_arm": "左臂",
   "gui.arsenalgraft.body_part.right_arm": "右臂",
+  "gui.arsenalgraft.body_part.left_hand": "左手",
+  "gui.arsenalgraft.body_part.right_hand": "右手",
   "gui.arsenalgraft.body_part.left_leg": "左腿",
   "gui.arsenalgraft.body_part.right_leg": "右腿",
+  "gui.arsenalgraft.body_part.left_foot": "左脚",
+  "gui.arsenalgraft.body_part.right_foot": "右脚",
+  
+  "gui.arsenalgraft.category.head": "头部改造",
+  "gui.arsenalgraft.category.torso": "躯干改造",
+  "gui.arsenalgraft.category.arms": "手臂改造",
+  "gui.arsenalgraft.category.legs": "腿部改造",
+  "gui.arsenalgraft.category.feet": "脚部改造",
   
   "gui.arsenalgraft.modification_list.title": "%s 改造列表",
   "gui.arsenalgraft.modification_list.info": "%s 可用改造: %d 项",

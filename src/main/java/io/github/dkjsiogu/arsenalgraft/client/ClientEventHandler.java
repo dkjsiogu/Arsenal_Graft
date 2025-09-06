@@ -274,6 +274,9 @@ public class ClientEventHandler {
      */
     private static void initializeClientServices() {
         try {
+            // 初始化GUI注册系统
+            io.github.dkjsiogu.arsenalgraft.client.gui.registry.GuiRegistry.initialize();
+            
             // 这里可以初始化客户端特定的服务
             // 例如：渲染服务、输入处理服务、音效服务等
             
