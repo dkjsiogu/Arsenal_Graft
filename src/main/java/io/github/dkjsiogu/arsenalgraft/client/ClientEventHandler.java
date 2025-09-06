@@ -1,11 +1,13 @@
 package io.github.dkjsiogu.arsenalgraft.client;
 
 import io.github.dkjsiogu.arsenalgraft.ArsenalGraft;
+import io.github.dkjsiogu.arsenalgraft.client.gui.screen.ModificationMainScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -58,6 +60,26 @@ public class ClientEventHandler {
             // 清理客户端数据
             clientPlayerData.clear();
             pendingUIUpdates.clear();
+        }
+    }
+    
+    /**
+     * 处理键盘按键事件
+     */
+    @SubscribeEvent
+    public static void onKeyInput(InputEvent.Key event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        
+        // 确保在游戏中且没有打开其他GUI
+        if (minecraft.level == null || minecraft.player == null || minecraft.screen != null) {
+            return;
+        }
+        
+        // 检查是否按下了打开主界面的键
+        if (KeyBindings.OPEN_MAIN_GUI.consumeClick()) {
+            // 打开改造主界面
+            minecraft.setScreen(new ModificationMainScreen());
+            ArsenalGraft.LOGGER.debug("通过键盘快捷键打开改造主界面");
         }
     }
     
