@@ -24,3 +24,5 @@ run
 # Files from Forge MDK
 forge*changelog.txt
 /archive/
+archive_*.zip
+/archive_*.zip
