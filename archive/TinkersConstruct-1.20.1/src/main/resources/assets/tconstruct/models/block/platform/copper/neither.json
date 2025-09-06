@@ -1,7 +1,0 @@
-{
-    "parent": "tconstruct:block/platform/neither",
-	"textures": {
-		"side": "tconstruct:block/platform/copper_side",
-		"top":  "tconstruct:block/platform/copper_top"
-	}
-}

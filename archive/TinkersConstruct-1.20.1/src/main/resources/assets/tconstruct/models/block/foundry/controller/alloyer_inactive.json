@@ -1,6 +1,0 @@
-{
-  "parent": "tconstruct:block/foundry/controller/alloyer",
-  "textures": {
-    "front": "tconstruct:block/foundry/controller/alloyer_inactive"
-  }
-}

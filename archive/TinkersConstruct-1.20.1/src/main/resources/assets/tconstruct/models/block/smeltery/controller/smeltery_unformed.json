@@ -1,8 +1,0 @@
-{
-  "parent": "tconstruct:block/template/controller",
-  "textures": {
-    "front": "tconstruct:block/smeltery/controller/smeltery_unformed",
-    "bricks": "tconstruct:block/smeltery/seared/bricks",
-    "back": "tconstruct:block/smeltery/io/back"
-  }
-}

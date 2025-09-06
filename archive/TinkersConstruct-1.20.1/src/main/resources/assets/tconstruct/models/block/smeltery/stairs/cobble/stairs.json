@@ -1,8 +1,0 @@
-{
-    "parent": "block/stairs",
-    "textures": {
-        "bottom": "tconstruct:block/smeltery/seared/cobble",
-        "top": "tconstruct:block/smeltery/seared/cobble",
-        "side": "tconstruct:block/smeltery/seared/cobble"
-    }
-}

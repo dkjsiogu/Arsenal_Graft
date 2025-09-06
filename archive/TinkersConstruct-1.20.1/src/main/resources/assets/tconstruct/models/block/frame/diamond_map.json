@@ -1,8 +1,0 @@
-{
-    "parent": "minecraft:block/item_frame_map",
-    "textures": {
-        "particle": "minecraft:block/diamond_block",
-        "wood": "minecraft:block/diamond_block",
-        "back": "tconstruct:block/item_frame_background"
-    }
-}
