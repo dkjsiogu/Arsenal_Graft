@@ -4,6 +4,8 @@ import io.github.dkjsiogu.arsenalgraft.api.v3.ArsenalGraftAPI;
 import io.github.dkjsiogu.arsenalgraft.api.v3.modification.InstalledSlot;
 import io.github.dkjsiogu.arsenalgraft.api.v3.modification.ModificationTemplate;
 import net.minecraft.client.Minecraft;
+import io.github.dkjsiogu.arsenalgraft.network.OpenHandInventoryPacket;
+import io.github.dkjsiogu.arsenalgraft.network.NetworkHandler;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -60,7 +62,8 @@ public class HandModificationScreen extends Screen {
     }
 
     private void openSlot(InstalledSlot slot) {
-        Minecraft.getInstance().setScreen(new HandInventoryScreen(player, slot));
+        // 发送请求到服务器打开标准菜单
+        NetworkHandler.sendToServer(new OpenHandInventoryPacket(slot.getSlotId()));
     }
 
     @Override

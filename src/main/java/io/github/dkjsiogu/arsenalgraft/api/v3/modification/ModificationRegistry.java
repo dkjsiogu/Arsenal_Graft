@@ -99,7 +99,7 @@ public class ModificationRegistry {
                 Component.literal("可重复安装以累加槽位 (受最大安装次数限制)")
             ))
             .slotType("hand")
-            .maxInstallCount(4); // 允许最多 4 次安装
+            .maxInstallCount(Integer.MAX_VALUE); // 移除上限：允许大量安装用于协同测试
 
         // 仅 1 槽位的 hand 类型库存
         InventoryComponentImpl inventoryComponent = new InventoryComponentImpl(1, "hand");

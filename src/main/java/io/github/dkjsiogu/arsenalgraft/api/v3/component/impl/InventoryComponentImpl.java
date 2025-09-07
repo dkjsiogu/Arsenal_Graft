@@ -4,7 +4,6 @@ import io.github.dkjsiogu.arsenalgraft.ArsenalGraft;
 import io.github.dkjsiogu.arsenalgraft.api.v3.component.IInventoryComponent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
@@ -25,32 +24,33 @@ public class InventoryComponentImpl implements IInventoryComponent {
     
     public InventoryComponentImpl(int slotCount) {
         this.handler = new ItemStackHandler(slotCount);
-        // 创建一个简单的容器来包装ItemStackHandler
-        this.container = new SimpleContainer(slotCount) {
-            @Override
-            public ItemStack getItem(int slot) {
-                return handler.getStackInSlot(slot);
+        // 完整委托Container，避免SimpleContainer内部数组与handler不同步导致的显示/提取问题
+        this.container = new net.minecraft.world.Container() {
+            @Override public int getContainerSize() { return handler.getSlots(); }
+            @Override public boolean isEmpty() {
+                for (int i = 0; i < handler.getSlots(); i++) if (!handler.getStackInSlot(i).isEmpty()) return false; return true;
             }
-            
-            @Override
-            public void setItem(int slot, @Nonnull ItemStack stack) {
-                handler.setStackInSlot(slot, stack);
+            @Override @Nonnull public ItemStack getItem(int slot) { return handler.getStackInSlot(slot); }
+            @Override @Nonnull public ItemStack removeItem(int slot, int count) {
+                ItemStack current = handler.getStackInSlot(slot);
+                if (current.isEmpty() || count <= 0) return ItemStack.EMPTY;
+                int toExtract = Math.min(count, current.getCount());
+                ItemStack result = current.copy(); result.setCount(toExtract);
+                current.shrink(toExtract);
+                if (current.getCount() <= 0) handler.setStackInSlot(slot, ItemStack.EMPTY); else handler.setStackInSlot(slot, current);
+                setChanged();
+                return result;
             }
-            
-            @Override
-            public int getContainerSize() {
-                return handler.getSlots();
+            @Override @Nonnull public ItemStack removeItemNoUpdate(int slot) {
+                ItemStack current = handler.getStackInSlot(slot);
+                if (current.isEmpty()) return ItemStack.EMPTY;
+                handler.setStackInSlot(slot, ItemStack.EMPTY);
+                return current;
             }
-            
-            @Override
-            public boolean isEmpty() {
-                for (int i = 0; i < handler.getSlots(); i++) {
-                    if (!handler.getStackInSlot(i).isEmpty()) {
-                        return false;
-                    }
-                }
-                return true;
-            }
+            @Override public void setItem(int slot, @Nonnull ItemStack stack) { handler.setStackInSlot(slot, stack); setChanged(); }
+            @Override public void setChanged() { InventoryComponentImpl.this.setChanged(); }
+            @Override public boolean stillValid(@Nonnull Player player) { return true; }
+            @Override public void clearContent() { for (int i=0;i<handler.getSlots();i++) handler.setStackInSlot(i, ItemStack.EMPTY); setChanged(); }
         };
     }
     
@@ -144,6 +144,9 @@ public class InventoryComponentImpl implements IInventoryComponent {
         }
         try {
             handler.setStackInSlot(slot, stack);
+            if (ArsenalGraft.LOGGER.isDebugEnabled()) {
+                ArsenalGraft.LOGGER.debug("[InventoryComponent] setItem slot={} stack={} count={}", slot, stack.getItem(), stack.getCount());
+            }
         } catch (Exception e) {
             ArsenalGraft.LOGGER.error("[InventoryComponent] 设置物品时发生错误，槽位: {}", slot, e);
         }

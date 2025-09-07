@@ -69,6 +69,20 @@ public class NetworkHandler {
             .encoder(SkillActivationPacket::encode)
             .consumerMainThread(SkillActivationPacket::handle)
             .add();
+
+        // 打开手部改造库存请求
+        INSTANCE.messageBuilder(OpenHandInventoryPacket.class, nextId++, NetworkDirection.PLAY_TO_SERVER)
+            .decoder(OpenHandInventoryPacket::decode)
+            .encoder(OpenHandInventoryPacket::encode)
+            .consumerMainThread(OpenHandInventoryPacket::handle)
+            .add();
+
+        // 手部库存同步
+        INSTANCE.messageBuilder(HandInventorySyncPacket.class, nextId++, NetworkDirection.PLAY_TO_CLIENT)
+            .decoder(HandInventorySyncPacket::decode)
+            .encoder(HandInventorySyncPacket::encode)
+            .consumerMainThread(HandInventorySyncPacket::handle)
+            .add();
             
         ArsenalGraft.LOGGER.info("Arsenal Graft 3.0网络系统注册完成，已注册{}个数据包", nextId);
     }

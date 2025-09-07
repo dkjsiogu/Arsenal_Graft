@@ -1,6 +1,7 @@
 package io.github.dkjsiogu.arsenalgraft.api.v3.gui;
 
 import io.github.dkjsiogu.arsenalgraft.api.v3.component.IInventoryComponent;
+import io.github.dkjsiogu.arsenalgraft.api.v3.component.impl.InventoryComponentImpl;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -18,6 +19,7 @@ public class ComponentInventoryMenuAdapter extends AbstractContainerMenu {
     
     protected final IInventoryComponent inventoryComponent;
     protected final Player player;
+    // 直接使用组件暴露的Container或ItemStackHandler (如果可用)
     
     public ComponentInventoryMenuAdapter(MenuType<?> menuType, int containerId, 
                                        Inventory playerInventory, 
@@ -25,10 +27,10 @@ public class ComponentInventoryMenuAdapter extends AbstractContainerMenu {
         super(menuType, containerId);
         this.inventoryComponent = inventoryComponent;
         this.player = playerInventory.player;
-        
-        // 添加组件槽位
+
+    // 添加组件槽位
         addComponentSlots();
-        
+
         // 添加玩家库存槽位
         addPlayerInventorySlots(playerInventory);
     }
@@ -38,17 +40,20 @@ public class ComponentInventoryMenuAdapter extends AbstractContainerMenu {
      */
     protected void addComponentSlots() {
         if (inventoryComponent != null && inventoryComponent.getSlotCount() > 0) {
-            // 根据槽位数量动态创建槽位布局
             int slotCount = inventoryComponent.getSlotCount();
-            int slotsPerRow = Math.min(slotCount, 9); // 每行最多9个槽位
-            
+            int slotsPerRow = Math.min(slotCount, 9);
+            InventoryComponentImpl impl = inventoryComponent instanceof InventoryComponentImpl ic ? ic : null;
             for (int i = 0; i < slotCount; i++) {
                 int row = i / slotsPerRow;
                 int col = i % slotsPerRow;
                 int x = 8 + col * 18;
                 int y = 18 + row * 18;
-                
-                addSlot(new ComponentSlot(inventoryComponent, i, x, y));
+                if (impl != null) {
+                    // 使用Forge内置 SlotItemHandler，避免自定义同步错误
+                    addSlot(new net.minecraftforge.items.SlotItemHandler(impl.getHandler(), i, x, y));
+                } else {
+                    addSlot(new ComponentSlot(inventoryComponent, i, x, y));
+                }
             }
         }
     }
@@ -116,67 +121,16 @@ public class ComponentInventoryMenuAdapter extends AbstractContainerMenu {
         return itemStack;
     }
     
-    /**
-     * 组件槽位实现
-     */
+    /** 组件槽位实现 */
     public static class ComponentSlot extends Slot {
         private final IInventoryComponent component;
         private final int slotIndex;
-        
         public ComponentSlot(IInventoryComponent component, int slotIndex, int x, int y) {
             super(component.getContainer(), slotIndex, x, y);
             this.component = component;
             this.slotIndex = slotIndex;
         }
-        
-        @Override
-        @Nonnull
-        public ItemStack getItem() {
-            return component.getItem(slotIndex);
-        }
-        
-        @Override
-        public void set(@Nonnull ItemStack stack) {
-            component.setItem(slotIndex, stack);
-            setChanged();
-        }
-        
-        @Override
-        @Nonnull
-        public ItemStack remove(int amount) {
-            ItemStack current = component.getItem(slotIndex);
-            if (current.isEmpty()) {
-                return ItemStack.EMPTY;
-            }
-            
-            int toExtract = Math.min(amount, current.getCount());
-            ItemStack result = current.copy();
-            result.setCount(toExtract);
-            
-            current.shrink(toExtract);
-            component.setItem(slotIndex, current);
-            setChanged();
-            
-            return result;
-        }
-        
-        @Override
-        public boolean mayPlace(@Nonnull ItemStack stack) {
-            return component.isItemValid(slotIndex, stack);
-        }
-        
-        @Override
-        public int getMaxStackSize() {
-            return component.getSlotLimit(slotIndex);
-        }
-        
-        @Override
-        public void setChanged() {
-            super.setChanged();
-            // 通知组件内容已更改
-            if (component instanceof io.github.dkjsiogu.arsenalgraft.api.v3.component.impl.InventoryComponentImpl) {
-                // 可以在这里添加额外的通知逻辑
-            }
-        }
+        @Override public boolean mayPlace(@Nonnull ItemStack stack) { return component.isItemValid(slotIndex, stack); }
+        @Override public int getMaxStackSize() { return component.getSlotLimit(slotIndex); }
     }
 }

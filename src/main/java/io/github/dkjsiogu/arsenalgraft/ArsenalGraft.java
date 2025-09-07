@@ -2,6 +2,9 @@
 package io.github.dkjsiogu.arsenalgraft;
 
 import io.github.dkjsiogu.arsenalgraft.core.service.ServiceRegistry;
+import io.github.dkjsiogu.arsenalgraft.menu.ArsenalMenus;
+import net.minecraft.client.gui.screens.MenuScreens;
+import io.github.dkjsiogu.arsenalgraft.client.gui.screen.HandInventoryMenuScreen;
 import io.github.dkjsiogu.arsenalgraft.network.NetworkHandler;
 import io.github.dkjsiogu.arsenalgraft.api.v3.ArsenalGraftV3Initializer;
 import io.github.dkjsiogu.arsenalgraft.api.v3.modification.ModificationRegistry;
@@ -36,7 +39,10 @@ public class ArsenalGraft {
     public ArsenalGraft(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
 
-        // 注册setup事件
+    // 注册DeferredRegister (菜单等)
+    ArsenalMenus.MENUS.register(modEventBus);
+
+    // 注册setup事件
         modEventBus.addListener(this::commonSetup);
         
         // 注册服务器事件
@@ -53,7 +59,7 @@ public class ArsenalGraft {
     private void commonSetup(final FMLCommonSetupEvent event) {
         LOGGER.info("Arsenal Graft 3.0 正在初始化...");
         
-        event.enqueueWork(() -> {
+    event.enqueueWork(() -> {
             // 初始化网络系统
             NetworkHandler.register();
             
@@ -84,6 +90,11 @@ public class ArsenalGraft {
         event.enqueueWork(() -> {
             // 客户端特定的初始化
             // 按键绑定会通过@Mod.EventBusSubscriber自动注册
+            try {
+                MenuScreens.register(ArsenalMenus.HAND_INVENTORY.get(), HandInventoryMenuScreen::new);
+            } catch (Exception e) {
+                LOGGER.error("注册菜单Screen失败", e);
+            }
             LOGGER.info("Arsenal Graft 3.0 客户端初始化完成");
         });
     }

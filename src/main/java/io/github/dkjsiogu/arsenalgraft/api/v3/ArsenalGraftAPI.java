@@ -50,11 +50,16 @@ public final class ArsenalGraftAPI {
                 return false;
             }
 
-            if (hasModification(player, modificationId)) {
-                LOGGER.info("Player {} already has modification: {}", player.getName().getString(), modificationId);
+            // 允许同模板多次安装：只在模板设置 maxInstallCount 限制时强制检查
+            long installedSame = getAllModifications(player).stream()
+                    .filter(s -> s.getTemplate().getId().equals(modificationId))
+                    .count();
+            if (template.get().getMaxInstallCount() > 0 && installedSame >= template.get().getMaxInstallCount()) {
+                LOGGER.info("Player {} reached per-template limit: {}", player.getName().getString(), modificationId);
                 return false;
             }
 
+            // 全局插槽上限检查（当前固定10，可后续扩展）
             List<InstalledSlot> existingSlots = getAllModifications(player);
             if (existingSlots.size() >= getMaxSlots(player)) {
                 LOGGER.warn("Player {} slot limit reached", player.getName().getString());
