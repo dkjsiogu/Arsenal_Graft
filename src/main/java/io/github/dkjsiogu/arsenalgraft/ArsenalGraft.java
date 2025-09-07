@@ -115,12 +115,13 @@ public class ArsenalGraft {
             LOGGER.warn("统一API命令注册失败", e);
         }
 
-        // 注册 normalhand 命令
+    // 旧的 normalhand 命令已移除，使用 /arsena 统一管理测试命令
+        // 注册 arsena 统一测试命令
         try {
-            io.github.dkjsiogu.arsenalgraft.command.NormalHandCommand.register(event.getDispatcher());
-            LOGGER.info("✓ normalhand 命令注册成功");
+            io.github.dkjsiogu.arsenalgraft.command.ArsenaCommand.register(event.getDispatcher());
+            LOGGER.info("✓ arsena 命令注册成功");
         } catch (Exception e) {
-            LOGGER.warn("注册 normalhand 命令失败", e);
+            LOGGER.warn("注册 arsena 命令失败", e);
         }
     }
 }
