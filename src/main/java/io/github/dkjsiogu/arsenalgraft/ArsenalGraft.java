@@ -3,6 +3,8 @@ package io.github.dkjsiogu.arsenalgraft;
 
 import io.github.dkjsiogu.arsenalgraft.core.service.ServiceRegistry;
 import io.github.dkjsiogu.arsenalgraft.network.NetworkHandler;
+import io.github.dkjsiogu.arsenalgraft.api.v3.ArsenalGraftV3Initializer;
+import io.github.dkjsiogu.arsenalgraft.api.v3.modification.ModificationRegistry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -59,6 +61,20 @@ public class ArsenalGraft {
             ServiceRegistry.getInstance().initializeCoreServices();
             
             LOGGER.info("Arsenal Graft 3.0 核心服务初始化完成");
+
+            // 初始化 v3 系统（如果尚未初始化）
+            try {
+                ArsenalGraftV3Initializer.initialize();
+            } catch (Exception e) {
+                LOGGER.error("初始化v3系统失败", e);
+            }
+
+            // 注册内置改造（包含 normal_hand / extra_hand 等）
+            try {
+                ModificationRegistry.registerBuiltinModifications();
+            } catch (Exception e) {
+                LOGGER.error("注册内置改造失败", e);
+            }
         });
     }
     

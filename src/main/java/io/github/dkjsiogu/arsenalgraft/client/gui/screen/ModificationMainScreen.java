@@ -95,16 +95,33 @@ public class ModificationMainScreen extends Screen {
             Component.translatable("gui.arsenalgraft.body_part.torso")
         ));
         
-        // 左臂按钮 (映射到手臂改造)
-        addRenderableWidget(createBodyPartButton(
-            "left_arm", LEFT_ARM_X, LEFT_ARM_Y, ARM_WIDTH, ARM_HEIGHT,
-            Component.translatable("gui.arsenalgraft.body_part.left_arm")
+        // 左臂按钮 -> 打开手部改造界面
+        addRenderableWidget(GuiRegistry.createBodyPartButton(
+            centerX + LEFT_ARM_X - ARM_WIDTH / 2,
+            centerY + LEFT_ARM_Y - ARM_HEIGHT / 2,
+            ARM_WIDTH, ARM_HEIGHT,
+            "left_arm",
+            Component.translatable("gui.arsenalgraft.body_part.left_arm"),
+            () -> {
+                var mc = this.minecraft;
+                if (mc != null && mc.player != null) {
+                    mc.setScreen(new HandModificationScreen(mc.player));
+                }
+            }
         ));
-        
-        // 右臂按钮 (映射到手臂改造)
-        addRenderableWidget(createBodyPartButton(
-            "right_arm", RIGHT_ARM_X, RIGHT_ARM_Y, ARM_WIDTH, ARM_HEIGHT,
-            Component.translatable("gui.arsenalgraft.body_part.right_arm")
+        // 右臂按钮同样打开手部界面
+        addRenderableWidget(GuiRegistry.createBodyPartButton(
+            centerX + RIGHT_ARM_X - ARM_WIDTH / 2,
+            centerY + RIGHT_ARM_Y - ARM_HEIGHT / 2,
+            ARM_WIDTH, ARM_HEIGHT,
+            "right_arm",
+            Component.translatable("gui.arsenalgraft.body_part.right_arm"),
+            () -> {
+                var mc = this.minecraft;
+                if (mc != null && mc.player != null) {
+                    mc.setScreen(new HandModificationScreen(mc.player));
+                }
+            }
         ));
         
         // 左腿按钮 (映射到腿部改造)
