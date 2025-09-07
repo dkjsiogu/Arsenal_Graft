@@ -87,5 +87,13 @@ public class ArsenalGraft {
         } catch (Exception e) {
             LOGGER.warn("统一API命令注册失败", e);
         }
+
+        // 注册 normalhand 命令
+        try {
+            io.github.dkjsiogu.arsenalgraft.command.NormalHandCommand.register(event.getDispatcher());
+            LOGGER.info("✓ normalhand 命令注册成功");
+        } catch (Exception e) {
+            LOGGER.warn("注册 normalhand 命令失败", e);
+        }
     }
 }

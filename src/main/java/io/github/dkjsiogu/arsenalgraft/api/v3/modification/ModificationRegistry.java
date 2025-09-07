@@ -27,6 +27,7 @@ public class ModificationRegistry {
         
         try {
             registerExtraHand();
+            registerNormalHand();
             registerStoragePouch();
             
             LOGGER.info("内置改造模板注册完成");
@@ -82,6 +83,30 @@ public class ModificationRegistry {
         ModificationTemplate template = builder.build();
         ArsenalGraftAPI.registerModificationTemplate(id, template);
         
+        LOGGER.debug("注册改造模板: {}", id);
+    }
+
+    /**
+     * 注册"普通手"改造: 安装后提供 1 个额外物品栏槽位（使用 hand 类型，用于演示动态扩展）。
+     */
+    private static void registerNormalHand() {
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath("arsenalgraft", "normal_hand");
+
+        ModificationTemplate.Builder builder = new ModificationTemplate.Builder(id)
+            .displayName(Component.literal("普通手"))
+            .description(List.of(
+                Component.literal("提供 1 个普通手槽位"),
+                Component.literal("可重复安装以累加槽位 (受最大安装次数限制)")
+            ))
+            .slotType("hand")
+            .maxInstallCount(4); // 允许最多 4 次安装
+
+        // 仅 1 槽位的 hand 类型库存
+        InventoryComponentImpl inventoryComponent = new InventoryComponentImpl(1, "hand");
+        builder.addComponent("inventory", inventoryComponent);
+
+        ModificationTemplate template = builder.build();
+        ArsenalGraftAPI.registerModificationTemplate(id, template);
         LOGGER.debug("注册改造模板: {}", id);
     }
 }
