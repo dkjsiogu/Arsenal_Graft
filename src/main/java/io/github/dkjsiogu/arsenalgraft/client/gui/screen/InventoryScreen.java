@@ -18,7 +18,7 @@ public class InventoryScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        // TODO: 添加物品栏相关组件
+        // 预留：后续将把动态槽位渲染出来
     }
 
     @Override
