@@ -33,6 +33,9 @@ public class ArsenaCommand {
                 .executes(ArsenaCommand::listAll)
                 .then(Commands.argument("player", EntityArgument.player()).executes(ArsenaCommand::listPlayer))
             )
+            .then(Commands.literal("debug")
+                .then(Commands.literal("templates").executes(ArsenaCommand::debugTemplates))
+            )
             .then(Commands.literal("check")
                 .then(Commands.argument("mod", ResourceLocationArgument.id())
                     .suggests(MOD_SUGGESTER)
@@ -44,7 +47,7 @@ public class ArsenaCommand {
                 .then(Commands.argument("mod", ResourceLocationArgument.id())
                     .suggests(MOD_SUGGESTER)
                     .executes(ArsenaCommand::grantSelf)
-                    .then(Commands.argument("player", EntityArgument.player()).executes(ArsenaCommand::grantOther))
+                    .then(Commands.argument("pl ayer", EntityArgument.player()).executes(ArsenaCommand::grantOther))
                 )
             )
             .then(Commands.literal("remove").requires(src -> src.hasPermission(2))
@@ -167,6 +170,20 @@ public class ArsenaCommand {
             return ok?1:0;
         } catch (Exception e) {
             ctx.getSource().sendFailure(Component.literal("命令执行失败"));
+            return 0;
+        }
+    }
+
+    // 调试: 输出当前注册的模板ID
+    private static int debugTemplates(CommandContext<CommandSourceStack> ctx) {
+        try {
+            var ids = ArsenalGraftAPI.getAllRegisteredModifications();
+            CommandSourceStack src = ctx.getSource();
+            src.sendSuccess(() -> Component.literal("[debug] 模板数量=" + ids.size()), false);
+            for (var id : ids) src.sendSuccess(() -> Component.literal(" - " + id), false);
+            return ids.size();
+        } catch (Exception e) {
+            ctx.getSource().sendFailure(Component.literal("debug 执行失败"));
             return 0;
         }
     }

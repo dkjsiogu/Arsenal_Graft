@@ -31,6 +31,16 @@ public interface ModificationManager {
      * 获取所有已注册的模板ID
      */
     List<ResourceLocation> getAllTemplateIds();
+
+    /**
+     * 清空所有已注册模板 (用于资源重载)
+     */
+    void clearTemplates();
+
+    /**
+     * 是否已注册指定模板
+     */
+    boolean isTemplateRegistered(ResourceLocation id);
     
     /**
      * 检查玩家是否可以安装指定改造

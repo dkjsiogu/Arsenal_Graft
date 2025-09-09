@@ -1,0 +1,12 @@
+{
+  "name": "普通手",
+  "description": "提供 1 个普通手槽位，可重复安装以累加槽位",
+  "slotType": "hand",
+  "maxInstances": 2147483647,
+  "components": {
+    "inventory": {
+      "size": 1,
+      "slotType": "hand"
+    }
+  }
+}

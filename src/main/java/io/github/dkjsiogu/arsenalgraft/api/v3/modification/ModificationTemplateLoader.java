@@ -37,12 +37,17 @@ public class ModificationTemplateLoader extends SimpleJsonResourceReloadListener
             .create();
     
     public ModificationTemplateLoader() {
-        super(GSON, "arsenalgraft/modifications");
+        super(GSON, "modifications"); // data/arsenalgraft/modifications/*.json
     }
     
     @Override
     protected void apply(@Nonnull Map<ResourceLocation, JsonElement> object, @Nonnull ResourceManager resourceManager, @Nonnull ProfilerFiller profiler) {
-        LOGGER.info("开始加载Arsenal Graft改造模板...");
+        LOGGER.info("开始加载Arsenal Graft改造模板... (命名空间过滤: data/*/modifications/*.json under arsenalgraft)");
+        if (object.isEmpty()) {
+            LOGGER.warn("未发现任何改造模板 JSON (检查: data/arsenalgraft/modifications/*.json 路径是否存在以及资源是否打进数据包)");
+        } else {
+            LOGGER.debug("发现模板文件列表: {}", object.keySet());
+        }
         
         ModificationManager manager = ServiceRegistry.getInstance().getService(ModificationManager.class);
         if (manager == null) {
@@ -50,13 +55,8 @@ public class ModificationTemplateLoader extends SimpleJsonResourceReloadListener
             return;
         }
         
-        // 清除旧的模板（如果管理器支持）
-        try {
-            // 假设ModificationManager有clearAllTemplates方法
-            // manager.clearAllTemplates();
-        } catch (Exception e) {
-            LOGGER.warn("无法清除旧模板", e);
-        }
+    // 清除旧模板 (完整重载)
+    try { manager.clearTemplates(); } catch (Exception e) { LOGGER.warn("无法清除旧模板", e); }
         
         int loaded = 0;
         int failed = 0;
@@ -122,9 +122,7 @@ public class ModificationTemplateLoader extends SimpleJsonResourceReloadListener
             }
             
             if (json.has("requirements")) {
-                JsonObject requirements = json.getAsJsonObject("requirements");
-                // 解析安装需求
-                // 暂时简化实现
+                // TODO: 未来可添加 requirements 校验逻辑
             }
             
             // 解析组件

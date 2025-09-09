@@ -7,7 +7,6 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import io.github.dkjsiogu.arsenalgraft.client.gui.screen.HandInventoryMenuScreen;
 import io.github.dkjsiogu.arsenalgraft.network.NetworkHandler;
 import io.github.dkjsiogu.arsenalgraft.api.v3.ArsenalGraftV3Initializer;
-import io.github.dkjsiogu.arsenalgraft.api.v3.modification.ModificationRegistry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -75,12 +74,7 @@ public class ArsenalGraft {
                 LOGGER.error("初始化v3系统失败", e);
             }
 
-            // 注册内置改造（包含 normal_hand / extra_hand 等）
-            try {
-                ModificationRegistry.registerBuiltinModifications();
-            } catch (Exception e) {
-                LOGGER.error("注册内置改造失败", e);
-            }
+            // JSON + KubeJS 将在资源重载阶段自动注册改造模板，不再手动调用 ModificationRegistry
         });
     }
     

@@ -68,6 +68,23 @@ public class ModificationManagerImpl implements ModificationManager {
             dataLock.readLock().unlock();
         }
     }
+
+    @Override
+    public void clearTemplates() {
+        dataLock.writeLock().lock();
+        try {
+            templates.clear();
+            System.out.println("[ModificationManagerImpl] 已清空所有改造模板 (资源重载)");
+        } finally {
+            dataLock.writeLock().unlock();
+        }
+    }
+
+    @Override
+    public boolean isTemplateRegistered(ResourceLocation id) {
+        dataLock.readLock().lock();
+        try { return templates.containsKey(id); } finally { dataLock.readLock().unlock(); }
+    }
     
     @Override
     public boolean canInstallModification(Player player, ModificationTemplate template) {
