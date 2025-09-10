@@ -101,6 +101,8 @@ public class HandInventoryMenu extends AbstractContainerMenu {
                     for (int i=0;i<size;i++) {
                         comp.setItem(i, handler.getStackInSlot(i).copy());
                     }
+                    // 立即持久化保存，避免登出或崩溃造成丢失
+                    io.github.dkjsiogu.arsenalgraft.api.v3.ArsenalGraftAPI.savePlayerModifications(p);
                 }
             }
         } else {

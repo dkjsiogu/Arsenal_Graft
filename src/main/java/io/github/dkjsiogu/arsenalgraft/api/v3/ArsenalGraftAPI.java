@@ -149,6 +149,20 @@ public final class ArsenalGraftAPI {
         return modManager.getAllTemplateIds();
     }
 
+    /**
+     * 立即持久化玩家当前所有改造槽位（写入统一的 arsenalgraft_data.installed_slots）。
+     * 供容器关闭、登出等场景调用，避免内存状态未写入导致的物品丢失。
+     */
+    public static void savePlayerModifications(Player player) {
+        if (player == null) return;
+        try {
+            ModificationManager modManager = ServiceRegistry.getInstance().getService(ModificationManager.class);
+            if (modManager != null) {
+                modManager.savePlayerData(player);
+            }
+        } catch (Exception ignored) {}
+    }
+
     public static void registerModificationTemplate(ResourceLocation id, ModificationTemplate template) {
         ModificationManager modManager = ServiceRegistry.getInstance().getService(ModificationManager.class);
         if (modManager != null) {

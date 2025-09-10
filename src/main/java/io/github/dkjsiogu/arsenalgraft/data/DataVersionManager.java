@@ -20,6 +20,11 @@ public class DataVersionManager {
     
     private static final List<DataMigrator> migrators = new ArrayList<>();
     
+    /**
+     * 存放具体迁移记录的列表，必须在静态初始化块之前创建
+     */
+    private static final List<MigrationRecord> migrations = new ArrayList<>();
+
     static {
         // 注册数据迁移器
         registerMigrator(1, 2, DataVersionManager::migrateV1ToV2);
@@ -48,7 +53,7 @@ public class DataVersionManager {
         }
     }
     
-    private static final List<MigrationRecord> migrations = new ArrayList<>();
+    // ...迁移记录定义已移动到类顶部，避免静态初始化时的空指针
     
     /**
      * 注册数据迁移器

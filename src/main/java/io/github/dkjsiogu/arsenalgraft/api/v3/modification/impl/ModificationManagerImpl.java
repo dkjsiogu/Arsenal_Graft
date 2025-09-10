@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import io.github.dkjsiogu.arsenalgraft.data.DataPersistenceManager;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.*;
@@ -23,7 +24,8 @@ import java.util.stream.Collectors;
  */
 public class ModificationManagerImpl implements ModificationManager {
     
-    private static final String NBT_SLOTS_KEY = "arsenalgraft_v3_slots";
+    // 旧版本(<=2.x) 使用的直接 ListTag 键 (已废弃)。现仅用于一次性迁移，不再作为读取回退。
+    private static final String LEGACY_SLOTS_KEY = "arsenalgraft_v3_slots";
     
     // 注册的模板（线程安全）
     private final Map<ResourceLocation, ModificationTemplate> templates = new ConcurrentHashMap<>();
@@ -245,49 +247,57 @@ public class ModificationManagerImpl implements ModificationManager {
      */
     private List<InstalledSlot> loadSlotsFromNBT(Player player) {
         List<InstalledSlot> slots = new ArrayList<>();
-        
-        CompoundTag playerData = player.getPersistentData();
-        if (!playerData.contains(NBT_SLOTS_KEY)) {
-            return slots;
-        }
-        
-        ListTag slotsTag = playerData.getList(NBT_SLOTS_KEY, Tag.TAG_COMPOUND);
-        
-        for (int i = 0; i < slotsTag.size(); i++) {
-            CompoundTag slotTag = slotsTag.getCompound(i);
-            
+
+        CompoundTag data = DataPersistenceManager.loadPlayerData(player);
+        CompoundTag playerPersistent = player.getPersistentData();
+
+        // 一次性迁移：如果新结构缺失但存在旧 ListTag，则转换
+        if ((data == null || !data.contains("installed_slots")) && playerPersistent.contains(LEGACY_SLOTS_KEY, Tag.TAG_LIST)) {
             try {
-                // 恢复插槽
-                UUID slotId = UUID.fromString(slotTag.getString("slotId"));
-                ResourceLocation templateId = ResourceLocation.tryParse(slotTag.getString("templateId"));
-                boolean installed = slotTag.getBoolean("installed");
-                
-                Optional<ModificationTemplate> templateOpt = getTemplate(templateId);
-                if (templateOpt.isEmpty()) {
-                    System.err.println("[ModificationManagerImpl] 找不到模板: " + templateId);
-                    continue;
+                ListTag legacyList = playerPersistent.getList(LEGACY_SLOTS_KEY, Tag.TAG_COMPOUND);
+                CompoundTag migratedRoot = data == null ? new CompoundTag() : data.copy();
+                CompoundTag newSlots = new CompoundTag();
+                for (int i = 0; i < legacyList.size(); i++) {
+                    CompoundTag slotTag = legacyList.getCompound(i);
+                    newSlots.put("slot_" + i, slotTag.copy());
                 }
-                
-                ModificationTemplate template = templateOpt.get();
-                
-                // 创建组件副本
-                Map<String, IModificationComponent> components = new HashMap<>();
-                for (Map.Entry<String, IModificationComponent> entry : template.getComponents().entrySet()) {
-                    components.put(entry.getKey(), entry.getValue().copy());
-                }
-                
-                // 创建插槽并恢复数据
-                InstalledSlot slot = new InstalledSlot(slotId, template, components, installed);
-                slot.deserializeNBT(slotTag);
-                
-                slots.add(slot);
-                
+                migratedRoot.put("installed_slots", newSlots);
+                DataPersistenceManager.saveCompoundToPersistentStorage(player, migratedRoot);
+                playerPersistent.remove(LEGACY_SLOTS_KEY); // 清理旧键
+                data = migratedRoot;
+                System.out.println("[ModificationManagerImpl] 已迁移旧版改造数据 -> installed_slots, 槽位数: " + legacyList.size());
             } catch (Exception e) {
-                System.err.println("[ModificationManagerImpl] 恢复插槽数据失败: " + e.getMessage());
-                e.printStackTrace();
+                System.err.println("[ModificationManagerImpl] 迁移旧数据失败: " + e.getMessage());
             }
         }
-        
+
+        if (data != null && data.contains("installed_slots")) {
+            CompoundTag slotsCompound = data.getCompound("installed_slots");
+            for (String key : slotsCompound.getAllKeys()) {
+                try {
+                    CompoundTag slotTag = slotsCompound.getCompound(key);
+                    UUID slotId = UUID.fromString(slotTag.getString("slotId"));
+                    ResourceLocation templateId = ResourceLocation.tryParse(slotTag.getString("templateId"));
+                    boolean installed = slotTag.getBoolean("installed");
+                    Optional<ModificationTemplate> templateOpt = getTemplate(templateId);
+                    if (templateOpt.isEmpty()) {
+                        System.err.println("[ModificationManagerImpl] 找不到模板: " + templateId);
+                        continue;
+                    }
+                    ModificationTemplate template = templateOpt.get();
+                    Map<String, IModificationComponent> components = new HashMap<>();
+                    for (Map.Entry<String, IModificationComponent> entry : template.getComponents().entrySet()) {
+                        components.put(entry.getKey(), entry.getValue().copy());
+                    }
+                    InstalledSlot slot = new InstalledSlot(slotId, template, components, installed);
+                    slot.deserializeNBT(slotTag);
+                    slots.add(slot);
+                } catch (Exception e) {
+                    System.err.println("[ModificationManagerImpl] 恢复插槽数据失败: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
         return slots;
     }
     
@@ -333,16 +343,24 @@ public class ModificationManagerImpl implements ModificationManager {
     }
     
     private void savePlayerSlots(Player player, List<InstalledSlot> slots) {
-        ListTag slotsTag = new ListTag();
-        
-        for (InstalledSlot slot : slots) {
-            CompoundTag slotTag = slot.serializeNBT();
-            slotsTag.add(slotTag);
+        // 将插槽序列化为CompoundTag的map形式并存入DataPersistenceManager
+        CompoundTag root = DataPersistenceManager.loadPlayerData(player);
+        if (root == null) {
+            root = new CompoundTag();
         }
-        
-        player.getPersistentData().put(NBT_SLOTS_KEY, slotsTag);
-        
-        System.out.println("[ModificationManagerImpl] 保存玩家数据，插槽数量: " + slots.size());
+
+        CompoundTag slotsCompound = new CompoundTag();
+        for (int i = 0; i < slots.size(); i++) {
+            CompoundTag slotTag = slots.get(i).serializeNBT();
+            // serializeNBT already includes slotId, templateId and components
+            slotsCompound.put("slot_" + i, slotTag);
+        }
+
+        root.put("installed_slots", slotsCompound);
+
+        // 使用统一的持久化管理器保存
+        DataPersistenceManager.saveCompoundToPersistentStorage(player, root);
+        System.out.println("[ModificationManagerImpl] 保存玩家数据（arsenalgraft_data），插槽数量: " + slots.size());
     }
     
     @Override
@@ -372,7 +390,7 @@ public class ModificationManagerImpl implements ModificationManager {
         try {
             UUID playerId = player.getUUID();
             playerSlotsCache.remove(playerId);
-            player.getPersistentData().remove(NBT_SLOTS_KEY);
+            player.getPersistentData().remove(LEGACY_SLOTS_KEY); // 清理旧实现遗留
             System.out.println("[ModificationManagerImpl] 清理玩家数据: " + player.getName().getString());
         } finally {
             dataLock.writeLock().unlock();

@@ -20,6 +20,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * 提供线程安全的数据访问和完整的错误处理
  */
 public class DataPersistenceManager {
+    public static final String DATA_KEY = "arsenalgraft_data";
     
     private static final ReentrantReadWriteLock dataLock = new ReentrantReadWriteLock();
     private static final ConcurrentHashMap<String, CompoundTag> playerDataCache = new ConcurrentHashMap<>();
@@ -54,7 +55,7 @@ public class DataPersistenceManager {
             }
         }
         
-        dataLock.writeLock().lock();
+    dataLock.writeLock().lock();
         try {
             ModificationManager modManager = ServiceRegistry.getInstance()
                 .getService(ModificationManager.class);
@@ -82,6 +83,9 @@ public class DataPersistenceManager {
             }
             
             playerData.put("installed_slots", slotsData);
+
+            // 引用常量以避免未使用警告（仅用于调试输出）
+            ArsenalGraft.LOGGER.debug("DataPersistenceManager config: maxRetries={}, backupKeep={} ", MAX_RETRIES, BACKUP_KEEP_COUNT);
             
             // 数据验证
             if (!DataVersionManager.validateData(playerData, player)) {
@@ -158,8 +162,8 @@ public class DataPersistenceManager {
     private static CompoundTag loadFromPersistentStorage(Player player) {
         try {
             CompoundTag persistentData = player.getPersistentData();
-            if (persistentData.contains("arsenalgraft_data")) {
-                return persistentData.getCompound("arsenalgraft_data");
+            if (persistentData.contains(DATA_KEY)) {
+                return persistentData.getCompound(DATA_KEY);
             }
         } catch (Exception e) {
             ArsenalGraft.LOGGER.error("从持久化存储加载数据失败", e);
@@ -173,9 +177,29 @@ public class DataPersistenceManager {
     private static void saveToPersistentStorage(Player player, CompoundTag data) {
         try {
             CompoundTag persistentData = player.getPersistentData();
-            persistentData.put("arsenalgraft_data", data);
+            persistentData.put(DATA_KEY, data);
+            // 更新缓存
+            try {
+                playerDataCache.put(player.getUUID().toString(), data.copy());
+                lastSyncTime.put(player.getUUID().toString(), System.currentTimeMillis());
+            } catch (Exception ignored) {}
         } catch (Exception e) {
             ArsenalGraft.LOGGER.error("保存到持久化存储失败", e);
+        }
+    }
+
+    /**
+     * 公开的保存方法：直接写入arsenalgraft_data并更新缓存
+     */
+    public static void saveCompoundToPersistentStorage(Player player, CompoundTag data) {
+        dataLock.writeLock().lock();
+        try {
+            saveToPersistentStorage(player, data);
+            ArsenalGraft.LOGGER.debug("已将arsenalgraft_data保存到玩家持久化存储: {}", player.getName().getString());
+        } catch (Exception e) {
+            ArsenalGraft.LOGGER.error("保存arsenalgraft_data失败: {}", e.getMessage(), e);
+        } finally {
+            dataLock.writeLock().unlock();
         }
     }
     
@@ -209,11 +233,20 @@ public class DataPersistenceManager {
         if (data != null) {
             // 使用网络工具进行同步
             try {
-                // 将CompoundTag转换为Map<String, CompoundTag>格式
+                // 构建按 slotId (UUID string) 为键的插槽数据映射，便于客户端按 UUID 恢复插槽状态
                 Map<String, CompoundTag> modificationMap = new HashMap<>();
-                for (String key : data.getAllKeys()) {
-                    if (data.get(key) instanceof CompoundTag tag) {
-                        modificationMap.put(key, tag);
+                if (data.contains("installed_slots")) {
+                    CompoundTag slotsCompound = data.getCompound("installed_slots");
+                    for (String key : slotsCompound.getAllKeys()) {
+                        if (slotsCompound.get(key) instanceof CompoundTag slotTag) {
+                            // 从 slotTag 中读取 slotId 字段，作为外部 key
+                            if (slotTag.contains("slotId")) {
+                                String slotIdStr = slotTag.getString("slotId");
+                                if (slotIdStr != null && !slotIdStr.isEmpty()) {
+                                    modificationMap.put(slotIdStr, slotTag);
+                                }
+                            }
+                        }
                     }
                 }
                 
