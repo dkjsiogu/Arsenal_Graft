@@ -9,5 +9,23 @@
   "gui.arsenalgraft.hand_config.inventory_wip": "物品栏功能开发中...",
   "gui.arsenalgraft.hand_config.future": "将来可以:",
   "gui.arsenalgraft.hand_config.future_place": "• 放置物品到手部",
-  "gui.arsenalgraft.hand_config.future_interact": "• 与玩家背包交互"
+  "gui.arsenalgraft.hand_config.future_interact": "• 与玩家背包交互",
+
+  "gui.arsenalgraft.main_screen.title": "Arsenal Graft - 身体改造",
+  "gui.arsenalgraft.main_screen.info": "点击身体部位查看和管理改造",
+  "gui.arsenalgraft.close": "关闭",
+  "gui.arsenalgraft.settings": "设置",
+
+  "gui.arsenalgraft.body_part.head": "头部",
+  "gui.arsenalgraft.body_part.torso": "躯干",
+  "gui.arsenalgraft.body_part.left_arm": "左臂",
+  "gui.arsenalgraft.body_part.right_arm": "右臂",
+  "gui.arsenalgraft.body_part.left_leg": "左腿",
+  "gui.arsenalgraft.body_part.right_leg": "右腿",
+  "gui.arsenalgraft.body_part.left_foot": "左脚",
+  "gui.arsenalgraft.body_part.right_foot": "右脚",
+
+  "gui.arsenalgraft.sidepanel.title": "改造列表",
+  "gui.arsenalgraft.sidepanel.empty": "暂无可用改造",
+  "gui.arsenalgraft.modification_detail.title": "改造详情"
 }

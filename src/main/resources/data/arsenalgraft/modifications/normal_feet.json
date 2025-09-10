@@ -1,0 +1,12 @@
+{
+  "display_name": "普通脚部",
+  "description": ["提供 1 个普通槽位，可重复安装以累加槽位"],
+  "slot_type": "feet",
+  "max_install_count": 2147483647,
+  "components": {
+    "inventory": {
+      "slot_count": 1,
+      "slot_type": "feet"
+    }
+  }
+}
